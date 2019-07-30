@@ -1,0 +1,86 @@
+{
+  "name": "kondo",
+  "productName": "kondo",
+  "version": "0.0.0",
+  "description": "TODO",
+  "license": "MIT",
+  "repository": "xapphire13/kondo",
+  "author": {
+    "name": "Xapphire13",
+    "url": "http://xapphire13.com"
+  },
+  "scripts": {
+    "postinstall": "electron-builder install-app-deps",
+    "lint": "eslint --ext .js,.jsx,.ts,.tsx ./",
+    "test": "npm run lint",
+    "build": "npm run build:app && npm run build:client",
+    "build:client": "webpack",
+    "build:app": "tsc -p tsconfig.app.json",
+    "start": "electron ./dist",
+    "pack": "electron-builder --dir --project-dir ./dist",
+    "dist": "electron-builder --macos --linux --windows --project-dir ./dist",
+    "release": "np"
+  },
+  "dependencies": {
+    "electron-context-menu": "^0.12.1",
+    "electron-debug": "^3.0.0",
+    "electron-store": "^3.3.0",
+    "electron-unhandled": "^2.2.0",
+    "electron-updater": "^4.0.6",
+    "electron-util": "^0.12.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6"
+  },
+  "devDependencies": {
+    "@types/react": "^16.8.23",
+    "@types/react-dom": "^16.8.5",
+    "@typescript-eslint/eslint-plugin": "^1.13.0",
+    "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "electron": "^5.0.4",
+    "electron-builder": "^20.43.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb-typescript": "^4.0.1",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-jsx-a11y": "^6.2.3",
+    "eslint-plugin-react": "^7.14.3",
+    "np": "^5.0.3",
+    "ts-loader": "^6.0.4",
+    "typescript": "^3.5.3",
+    "webpack": "^4.38.0",
+    "webpack-cli": "^3.3.6",
+    "webpack-dev-server": "^3.7.2"
+  },
+  "np": {
+    "publish": false,
+    "releaseDraft": false
+  },
+  "build": {
+    "appId": "com.xapphire13.kondo",
+    "mac": {
+      "category": "public.app-category.utility",
+      "darkModeSupport": true
+    },
+    "dmg": {
+      "iconSize": 160,
+      "contents": [
+        {
+          "x": 180,
+          "y": 170
+        },
+        {
+          "x": 480,
+          "y": 170,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb"
+      ],
+      "category": "Utility"
+    }
+  }
+}

@@ -13,10 +13,11 @@
     "postinstall": "electron-builder install-app-deps",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./",
     "test": "npm run lint",
-    "build": "npm run build:app && npm run build:client",
+    "build": "npm run build:main && npm run build:client",
     "build:client": "webpack",
-    "build:app": "tsc -p tsconfig.app.json",
+    "build:main": "tsc -p tsconfig.main.json",
     "start": "electron ./dist",
+    "debug": "electron --inspect ./dist",
     "pack": "electron-builder --dir --project-dir ./dist",
     "dist": "electron-builder --macos --linux --windows --project-dir ./dist",
     "release": "np"
@@ -24,10 +25,12 @@
   "dependencies": {
     "electron-context-menu": "^0.12.1",
     "electron-debug": "^3.0.0",
+    "electron-rebuild": "^1.8.5",
     "electron-store": "^3.3.0",
     "electron-unhandled": "^2.2.0",
     "electron-updater": "^4.0.6",
     "electron-util": "^0.12.0",
+    "es6-promise-pool": "^2.5.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },

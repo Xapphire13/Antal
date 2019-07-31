@@ -5,11 +5,11 @@ import unhandled from 'electron-unhandled';
 import debug from 'electron-debug';
 import contextMenu from 'electron-context-menu';
 import menu from './menu';
+import test from './test';
 // / const {autoUpdater} = require('electron-updater');
 
 unhandled();
 debug({
-  showDevTools: false,
   devToolsMode: 'previous',
 });
 contextMenu();
@@ -85,4 +85,10 @@ app.on('activate', async () => {
   await app.whenReady();
   Menu.setApplicationMenu(menu);
   mainWindow = await createMainWindow();
+
+  const start = Date.now();
+  await test();
+  const end = Date.now();
+
+  console.log(`Took: ${(end - start) / 1000} seconds`);
 })();

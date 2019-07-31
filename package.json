@@ -30,6 +30,7 @@
     "electron-unhandled": "^2.2.0",
     "electron-updater": "^4.0.6",
     "electron-util": "^0.12.0",
+    "pixi.js": "^5.1.0",
     "react": "^16.8.6",
     "react-dom": "^16.8.6"
   },

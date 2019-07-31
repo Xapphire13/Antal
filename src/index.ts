@@ -5,7 +5,6 @@ import unhandled from 'electron-unhandled';
 import debug from 'electron-debug';
 import contextMenu from 'electron-context-menu';
 import menu from './menu';
-import test from './test';
 // / const {autoUpdater} = require('electron-updater');
 
 unhandled();
@@ -86,9 +85,9 @@ app.on('activate', async () => {
   Menu.setApplicationMenu(menu);
   mainWindow = await createMainWindow();
 
-  const start = Date.now();
-  console.log(await test());
-  const end = Date.now();
+  // const start = Date.now();
+  // console.log(await test());
+  // const end = Date.now();
 
-  console.log(`Took: ${(end - start) / 1000} seconds`);
+  // console.log(`Took: ${(end - start) / 1000} seconds`);
 })();

@@ -87,7 +87,7 @@ app.on('activate', async () => {
   mainWindow = await createMainWindow();
 
   const start = Date.now();
-  await test();
+  console.log(await test());
   const end = Date.now();
 
   console.log(`Took: ${(end - start) / 1000} seconds`);

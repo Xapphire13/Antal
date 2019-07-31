@@ -2,17 +2,40 @@
 import fs, { Dirent } from 'fs';
 import path from 'path';
 import { promisify } from 'util';
-import PromisePool from 'es6-promise-pool';
 
 const readDir = promisify(fs.readdir);
 const stat = promisify(fs.stat);
-const promises: Promise<void> = [];
+const promiseQueue: (() => Promise<void>)[] = [];
+const concurrency = 20;
+let runningPromises = 0;
 
-function getPromise() {
+function runNextTask() {
+  if (runningPromises < concurrency) {
+    const nextTask = promiseQueue.shift();
 
+    if (nextTask) {
+      nextTask();
+    }
+  }
 }
 
-const pool = new PromisePool();
+function scheduleTask(task: () => Promise<void>): Promise<void> {
+  return new Promise((res, rej) => {
+    const wrapper = () => {
+      runningPromises += 1;
+      return task().then(res, rej).finally(() => { runningPromises -= 1; runNextTask(); });
+    };
+    promiseQueue.push(wrapper);
+
+    runNextTask();
+  });
+}
+
+function awaitOnPool<T>(originalPromise: Promise<T>): Promise<T> {
+  runningPromises -= 1;
+  return originalPromise.finally(() => { runningPromises += 1; });
+}
+
 
 interface KondoDirectory {
   path: string;
@@ -23,21 +46,7 @@ interface KondoDirectory {
   }
 }
 
-function group<T>(list: T[], groupSize: number) {
-  return list.reduce((groups: T[][], current) => {
-    const lastGroup = groups[groups.length - 1];
-
-    if (lastGroup.length < groupSize) {
-      lastGroup.push(current);
-    } else {
-      groups.push([current]);
-    }
-
-    return groups;
-  }, [[]]);
-}
-
-async function processDirectory(dirPath: string, entries: Dirent[], depth: number): Promise<KondoDirectory> {
+async function processDirectory(dirPath: string, entries: Dirent[]): Promise<KondoDirectory> {
   const dir: KondoDirectory = {
     path: dirPath,
     size: 0,
@@ -47,20 +56,8 @@ async function processDirectory(dirPath: string, entries: Dirent[], depth: numbe
     },
   };
 
-  // if (depth >= 10) return dir;
-
   const childDirs = entries.filter(entry => entry.isDirectory());
   const childFiles = entries.filter(entry => entry.isFile());
-
-  const dirTasks: (() => Promise<KondoDirectory | null>)[] = childDirs.map(childDir => async () => {
-    try {
-      const entryPath = path.resolve(dirPath, childDir.name);
-      const childEntries = await readDir(entryPath, { withFileTypes: true });
-      return processDirectory(entryPath, childEntries, depth + 1);
-    } catch (err) {
-      return null;
-    }
-  });
 
   // eslint-disable-next-line no-restricted-syntax
   for (const childFile of childFiles) {
@@ -78,19 +75,22 @@ async function processDirectory(dirPath: string, entries: Dirent[], depth: numbe
     dir.size += stats.size;
   }
 
-  const groupedTasks = group(dirTasks, 3);
-
-  // eslint-disable-next-line no-restricted-syntax
-  for (const taskGroup of groupedTasks) {
-    await Promise.all(taskGroup.map(async task => {
-      const childKondoDir = await task();
+  const dirTasks: (() => Promise<void>)[] = childDirs.map(childDir => async () => {
+    try {
+      const entryPath = path.resolve(dirPath, childDir.name);
+      const childEntries = await readDir(entryPath, { withFileTypes: true });
+      const childKondoDir = await processDirectory(entryPath, childEntries);
 
       if (childKondoDir) {
         dir.children.push(childKondoDir);
         dir.size += childKondoDir.size;
       }
-    }));
-  }
+    } catch (err) {
+      // ...
+    }
+  });
+
+  await awaitOnPool(Promise.all(dirTasks.map(task => scheduleTask(task))));
 
   return dir;
 }
@@ -100,7 +100,5 @@ export default async function test() {
     withFileTypes: true,
   });
 
-  const rootDir = await processDirectory('/', dir, 0);
-
-  console.log(rootDir);
+  return processDirectory('/', dir);
 }

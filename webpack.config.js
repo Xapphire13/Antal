@@ -41,7 +41,7 @@ const baseConfig = {
 
 const rendererConfig = {
   ...baseConfig,
-  entry: './src/client/index.tsx',
+  entry: './src/renderer/index.tsx',
 
   output: {
     filename: 'renderer-[name].js',
@@ -55,7 +55,7 @@ const rendererConfig = {
         loader: 'ts-loader',
         exclude: [/node_modules/],
         options: {
-          configFile: 'tsconfig.client.json'
+          configFile: 'tsconfig.renderer.json'
         }
       }
     ]

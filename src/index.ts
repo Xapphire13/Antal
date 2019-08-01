@@ -9,7 +9,7 @@ import menu from './menu';
 
 unhandled();
 debug({
-  devToolsMode: 'previous',
+  devToolsMode: 'previous'
 });
 contextMenu();
 
@@ -19,12 +19,12 @@ app.setAppUserModelId('com.xapphire13.kondo');
 // Uncomment this before publishing your first version.
 // It's commented out as it throws an error if there are no published versions.
 // if (!is.development) {
-// 	const FOUR_HOURS = 1000 * 60 * 60 * 4;
-// 	setInterval(() => {
-// 		autoUpdater.checkForUpdates();
-// 	}, FOUR_HOURS);
+//   const FOUR_HOURS = 1000 * 60 * 60 * 4;
+//   setInterval(() => {
+//     autoUpdater.checkForUpdates();
+//   }, FOUR_HOURS);
 //
-// 	autoUpdater.checkForUpdates();
+//   autoUpdater.checkForUpdates();
 // }
 
 // Prevent window from being garbage collected
@@ -35,7 +35,7 @@ const createMainWindow = async () => {
     title: app.getName(),
     show: false,
     width: 600,
-    height: 400,
+    height: 400
   });
 
   win.on('ready-to-show', () => {

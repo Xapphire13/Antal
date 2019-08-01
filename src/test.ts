@@ -23,7 +23,12 @@ function scheduleTask(task: () => Promise<void>): Promise<void> {
   return new Promise((res, rej) => {
     const wrapper = () => {
       runningPromises += 1;
-      return task().then(res, rej).finally(() => { runningPromises -= 1; runNextTask(); });
+      return task()
+        .then(res, rej)
+        .finally(() => {
+          runningPromises -= 1;
+          runNextTask();
+        });
     };
     promiseQueue.push(wrapper);
 
@@ -33,9 +38,10 @@ function scheduleTask(task: () => Promise<void>): Promise<void> {
 
 function awaitOnPool<T>(originalPromise: Promise<T>): Promise<T> {
   runningPromises -= 1;
-  return originalPromise.finally(() => { runningPromises += 1; });
+  return originalPromise.finally(() => {
+    runningPromises += 1;
+  });
 }
-
 
 interface KondoDirectory {
   path: string;
@@ -43,17 +49,20 @@ interface KondoDirectory {
   children: KondoDirectory[];
   childrenFileSizes: {
     other: number;
-  }
+  };
 }
 
-async function processDirectory(dirPath: string, entries: Dirent[]): Promise<KondoDirectory> {
+async function processDirectory(
+  dirPath: string,
+  entries: Dirent[]
+): Promise<KondoDirectory> {
   const dir: KondoDirectory = {
     path: dirPath,
     size: 0,
     children: [],
     childrenFileSizes: {
-      other: 0,
-    },
+      other: 0
+    }
   };
 
   const childDirs = entries.filter(entry => entry.isDirectory());
@@ -75,20 +84,22 @@ async function processDirectory(dirPath: string, entries: Dirent[]): Promise<Kon
     dir.size += stats.size;
   }
 
-  const dirTasks: (() => Promise<void>)[] = childDirs.map(childDir => async () => {
-    try {
-      const entryPath = path.resolve(dirPath, childDir.name);
-      const childEntries = await readDir(entryPath, { withFileTypes: true });
-      const childKondoDir = await processDirectory(entryPath, childEntries);
+  const dirTasks: (() => Promise<void>)[] = childDirs.map(
+    childDir => async () => {
+      try {
+        const entryPath = path.resolve(dirPath, childDir.name);
+        const childEntries = await readDir(entryPath, { withFileTypes: true });
+        const childKondoDir = await processDirectory(entryPath, childEntries);
 
-      if (childKondoDir) {
-        dir.children.push(childKondoDir);
-        dir.size += childKondoDir.size;
+        if (childKondoDir) {
+          dir.children.push(childKondoDir);
+          dir.size += childKondoDir.size;
+        }
+      } catch (err) {
+        // ...
       }
-    } catch (err) {
-      // ...
     }
-  });
+  );
 
   await awaitOnPool(Promise.all(dirTasks.map(task => scheduleTask(task))));
 
@@ -97,7 +108,7 @@ async function processDirectory(dirPath: string, entries: Dirent[]): Promise<Kon
 
 export default async function test() {
   const dir = await readDir('/', {
-    withFileTypes: true,
+    withFileTypes: true
   });
 
   return processDirectory('/', dir);

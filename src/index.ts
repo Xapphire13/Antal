@@ -1,5 +1,5 @@
 import path from 'path';
-import { app, BrowserWindow, Menu } from 'electron'; // eslint-disable-line
+import { app, BrowserWindow, Menu, ipcMain } from 'electron'; // eslint-disable-line
 import { is } from 'electron-util';
 import unhandled from 'electron-unhandled';
 import debug from 'electron-debug';
@@ -35,7 +35,10 @@ const createMainWindow = async () => {
     title: app.getName(),
     show: false,
     width: 600,
-    height: 400
+    height: 400,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
   win.on('ready-to-show', () => {
@@ -78,6 +81,11 @@ app.on('activate', async () => {
   if (!mainWindow) {
     mainWindow = await createMainWindow();
   }
+});
+
+ipcMain.on('scan-disk', (event: any) => {
+  console.log('scanning!');
+  event.reply('scan-complete', {});
 });
 
 (async () => {

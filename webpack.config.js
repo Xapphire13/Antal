@@ -14,48 +14,84 @@ const webpack = require('webpack');
  *
  */
 
-module.exports = {
+const baseConfig = {
   mode: 'development',
-  entry: './src/client/index.tsx',
-
-  output: {
-    filename: '[name].js',
-    path: path.resolve(__dirname, 'dist/client'),
-  },
-
   plugins: [new webpack.ProgressPlugin()],
-
-  module: {
-    rules: [
-      {
-        test: /.(ts|tsx)?$/,
-        loader: 'ts-loader',
-        include: [path.resolve(__dirname, 'src/client')],
-        exclude: [/node_modules/],
-        options: {
-          configFile: 'tsconfig.client.json',
-        },
-      },
-    ],
-  },
 
   optimization: {
     splitChunks: {
       cacheGroups: {
         vendors: {
           priority: -10,
-          test: /[\\/]node_modules[\\/]/,
-        },
+          test: /[\\/]node_modules[\\/]/
+        }
       },
 
       chunks: 'async',
       minChunks: 1,
       minSize: 30000,
-      name: true,
-    },
+      name: true
+    }
   },
 
   resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.jsx'],
-  },
+    extensions: ['.tsx', '.ts', '.js', '.jsx']
+  }
 };
+
+const rendererConfig = {
+  ...baseConfig,
+  entry: './src/client/index.tsx',
+
+  output: {
+    filename: 'renderer-[name].js',
+    path: path.resolve(__dirname, 'dist')
+  },
+
+  module: {
+    rules: [
+      {
+        test: /.(ts|tsx)?$/,
+        loader: 'ts-loader',
+        exclude: [/node_modules/],
+        options: {
+          configFile: 'tsconfig.client.json'
+        }
+      }
+    ]
+  },
+
+  target: 'electron-renderer'
+};
+
+const mainConfig = {
+  ...baseConfig,
+
+  entry: './src/index.ts',
+
+  output: {
+    filename: 'index.js',
+    path: path.resolve(__dirname, 'dist')
+  },
+
+  module: {
+    rules: [
+      {
+        test: /.(ts|tsx)?$/,
+        loader: 'ts-loader',
+        exclude: [/node_modules/],
+        options: {
+          configFile: 'tsconfig.main.json'
+        }
+      }
+    ]
+  },
+
+  node: {
+    __dirname: false
+  },
+
+  target: 'electron-main'
+};
+
+module.exports = [rendererConfig, mainConfig];

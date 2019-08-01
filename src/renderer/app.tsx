@@ -7,10 +7,11 @@ import PixiCanvas, { OnStageReadyParams } from './pixi-canvas';
 import { KondoDirectory } from '../test';
 
 const readFile = promisify(fs.readFile);
+const MIN_WIDTH = Math.PI / 180;
 
 export default function App() {
   return (
-    <div style={{ background: '#21252B' }}>
+    <div style={{ background: '#21252B', width: '100%', height: '100%' }}>
       <PixiCanvas onStageReady={onStageReady} />
     </div>
   );
@@ -66,6 +67,7 @@ function renderDirectory({
 }) {
   let startAngle = minAngle;
   const angleWidth = maxAngle - minAngle;
+  let smallFilesSize = 0;
 
   // Render directories
   for (const childDir of directory.children) {
@@ -73,19 +75,21 @@ function renderDirectory({
 
     const percentage = childDir.size / directory.size;
     const endAngle = startAngle + angleWidth * percentage;
-    const arc = createArc({
-      centerX,
-      centerY,
-      innerRadius: shellNumber * 20,
-      size: 20,
-      startAngle,
-      endAngle,
-      color: 0xff1111
-    });
+    const childWidth = endAngle - startAngle;
 
-    stage.addChild(arc);
+    if (childWidth >= MIN_WIDTH) {
+      const arc = createArc({
+        centerX,
+        centerY,
+        innerRadius: shellNumber * 20,
+        size: 20,
+        startAngle,
+        endAngle,
+        color: 0xff1111
+      });
 
-    if (shellNumber < 6) {
+      stage.addChild(arc);
+
       renderDirectory({
         centerX,
         centerY,
@@ -95,9 +99,11 @@ function renderDirectory({
         shellNumber: shellNumber + 1,
         stage
       });
-    }
 
-    startAngle = endAngle;
+      startAngle = endAngle;
+    } else {
+      smallFilesSize += childDir.size;
+    }
   }
 
   // Render other files
@@ -115,6 +121,22 @@ function renderDirectory({
   });
 
   stage.addChild(otherFilesArc);
+  startAngle = otherFilesEndAngle;
+
+  // Render small files
+  const smallFilesPercentage = smallFilesSize / directory.size;
+  const smallFilesEndAngle = startAngle + angleWidth * smallFilesPercentage;
+  const smallFilesArc = createArc({
+    centerX,
+    centerY,
+    innerRadius: shellNumber * 20,
+    size: 20,
+    startAngle,
+    endAngle: smallFilesEndAngle,
+    color: 0x444444
+  });
+
+  stage.addChild(smallFilesArc);
 }
 
 function createArc({

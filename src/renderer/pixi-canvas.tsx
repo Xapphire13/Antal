@@ -32,5 +32,7 @@ export default function PixiCanvas({ onStageReady }: PixiCanvasProps) {
     }
   });
 
-  return <div style={{ width: 300, height: 300 }} ref={divElement as any} />;
+  return (
+    <div style={{ width: '100%', height: '100%' }} ref={divElement as any} />
+  );
 }

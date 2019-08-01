@@ -15,3 +15,8 @@ body {
   text-rendering: optimizeLegibility;
   font-feature-settings: "liga", "clig", "kern";
 }
+
+#app-root {
+  width: 100%;
+  height: 100%;
+}

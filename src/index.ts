@@ -4,8 +4,14 @@ import { is } from 'electron-util';
 import unhandled from 'electron-unhandled';
 import debug from 'electron-debug';
 import contextMenu from 'electron-context-menu';
+import tempy from 'tempy';
+import fs from 'fs';
+import { promisify } from 'util';
 import menu from './menu';
+import test from './test';
 // / const {autoUpdater} = require('electron-updater');
+
+const writeFile = promisify(fs.writeFile);
 
 unhandled();
 debug({
@@ -83,9 +89,14 @@ app.on('activate', async () => {
   }
 });
 
-ipcMain.on('scan-disk', (event: any) => {
+ipcMain.on('scan-disk', async (event: any) => {
   console.log('scanning!');
-  event.reply('scan-complete', {});
+  const results = await test();
+  const tmpPath = tempy.file();
+  console.log(`writing to temp file: ${tmpPath}`);
+  await writeFile(tmpPath, JSON.stringify(results));
+  console.log('done');
+  event.reply('scan-complete', tmpPath);
 });
 
 (async () => {

@@ -7,6 +7,7 @@ const readDir = promisify(fs.readdir);
 const stat = promisify(fs.stat);
 const promiseQueue: (() => Promise<void>)[] = [];
 const concurrency = 20;
+const limitDepth = false;
 let runningPromises = 0;
 
 function runNextTask() {
@@ -43,7 +44,7 @@ function awaitOnPool<T>(originalPromise: Promise<T>): Promise<T> {
   });
 }
 
-interface KondoDirectory {
+export interface KondoDirectory {
   path: string;
   size: number;
   children: KondoDirectory[];
@@ -54,7 +55,8 @@ interface KondoDirectory {
 
 async function processDirectory(
   dirPath: string,
-  entries: Dirent[]
+  entries: Dirent[],
+  depth: number
 ): Promise<KondoDirectory> {
   const dir: KondoDirectory = {
     path: dirPath,
@@ -65,10 +67,11 @@ async function processDirectory(
     }
   };
 
+  if (limitDepth && depth >= 10) return dir;
+
   const childDirs = entries.filter(entry => entry.isDirectory());
   const childFiles = entries.filter(entry => entry.isFile());
 
-  // eslint-disable-next-line no-restricted-syntax
   for (const childFile of childFiles) {
     const entryPath = path.resolve(dirPath, childFile.name);
 
@@ -89,7 +92,11 @@ async function processDirectory(
       try {
         const entryPath = path.resolve(dirPath, childDir.name);
         const childEntries = await readDir(entryPath, { withFileTypes: true });
-        const childKondoDir = await processDirectory(entryPath, childEntries);
+        const childKondoDir = await processDirectory(
+          entryPath,
+          childEntries,
+          depth + 1
+        );
 
         if (childKondoDir) {
           dir.children.push(childKondoDir);
@@ -111,5 +118,5 @@ export default async function test() {
     withFileTypes: true
   });
 
-  return processDirectory('/', dir);
+  return processDirectory('/', dir, 0);
 }

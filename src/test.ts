@@ -5,52 +5,16 @@ import { promisify } from 'util';
 
 const readDir = promisify(fs.readdir);
 const stat = promisify(fs.stat);
-// const promiseQueue: (() => Promise<void>)[] = [];
-// const concurrency = 20;
-const limitDepth = false;
-// let runningPromises = 0;
-
-// function runNextTask() {
-//   if (runningPromises < concurrency) {
-//     const nextTask = promiseQueue.shift();
-
-//     if (nextTask) {
-//       nextTask();
-//     }
-//   }
-// }
-
-// function scheduleTask(task: () => Promise<void>): Promise<void> {
-//   return new Promise((res, rej) => {
-//     const wrapper = () => {
-//       runningPromises += 1;
-//       return task()
-//         .then(res, rej)
-//         .finally(() => {
-//           runningPromises -= 1;
-//           runNextTask();
-//         });
-//     };
-//     promiseQueue.push(wrapper);
-
-//     runNextTask();
-//   });
-// }
-
-// function awaitOnPool<T>(originalPromise: Promise<T>): Promise<T> {
-//   runningPromises -= 1;
-//   return originalPromise.finally(() => {
-//     runningPromises += 1;
-//   });
-// }
 
 export enum KondoType {
+  ApplicationFile,
+  Archive,
+  Audio,
   Document,
   Image,
-  Video,
-  Audio,
+  Other,
   SourceCode,
-  Other
+  Video
 }
 
 export interface KondoDirectory {
@@ -97,95 +61,27 @@ function getFileType(filename: string): KondoType {
     case '.yml':
     case '.json':
       return KondoType.SourceCode;
+    case '.plist':
+    case '.dylib':
+    case '.jar':
+      return KondoType.ApplicationFile;
+    case '.zip':
+    case '.tar':
+      return KondoType.Archive;
     default:
       return KondoType.Other;
   }
 }
 
-// async function processDirectory(
-//   dirPath: string,
-//   entries: Dirent[],
-//   depth: number
-// ): Promise<KondoDirectory> {
-//   const dir: KondoDirectory = {
-//     path: path.basename(dirPath) || dirPath,
-//     size: 0,
-//     type: KondoType.Other,
-//     children: [],
-//     childrenFileSizes: {
-//       [KondoType.Audio]: 0,
-//       [KondoType.Document]: 0,
-//       [KondoType.Image]: 0,
-//       [KondoType.Other]: 0,
-//       [KondoType.SourceCode]: 0,
-//       [KondoType.Video]: 0
-//     }
-//   };
-
-//   if (limitDepth && depth >= 10) return dir;
-
-//   const childDirs = entries.filter(entry => entry.isDirectory());
-//   const childFiles = entries.filter(entry => entry.isFile());
-
-//   for (const childFile of childFiles) {
-//     const entryPath = path.resolve(dirPath, childFile.name);
-
-//     let stats;
-//     try {
-//       stats = await stat(entryPath);
-//     } catch (err) {
-//       // eslint-disable-next-line no-continue
-//       continue;
-//     }
-
-//     const fileType = getFileType(childFile.name);
-
-//     dir.childrenFileSizes[fileType] += stats.size;
-//     dir.size += stats.size;
-//   }
-
-//   const dirTasks: (() => Promise<void>)[] = childDirs.map(
-//     childDir => async () => {
-//       try {
-//         const entryPath = path.resolve(dirPath, childDir.name);
-//         const childEntries = await readDir(entryPath, { withFileTypes: true });
-//         const childKondoDir = await processDirectory(
-//           entryPath,
-//           childEntries,
-//           depth + 1
-//         );
-
-//         if (childKondoDir) {
-//           dir.children.push(childKondoDir);
-//           dir.size += childKondoDir.size;
-//         }
-//       } catch (err) {
-//         // ...
-//       }
-//     }
-//   );
-
-//   await awaitOnPool(Promise.all(dirTasks.map(task => scheduleTask(task))));
-
-//   const fileTypesBySize = { ...dir.childrenFileSizes };
-//   dir.children.forEach(childDir => {
-//     fileTypesBySize[childDir.type] += childDir.size;
-//   });
-
-//   let predominantType: KondoType = 0;
-//   let largestSize = fileTypesBySize[predominantType];
-//   Object.keys(fileTypesBySize).forEach((key: unknown) => {
-//     const type = key as KondoType;
-//     if (fileTypesBySize[type] > largestSize) {
-//       predominantType = type;
-//       largestSize = fileTypesBySize[type];
-//     }
-//   });
-
-//   dir.type = predominantType;
-
-//   return dir;
-// }
+function generateBlankChildrenSizes(): { [key in KondoType]: number } {
+  return (
+    Object.keys(KondoType)
+      // eslint-disable-next-line no-restricted-globals
+      .filter((key: any) => !isNaN(key))
+      .map((key: any) => key as KondoType)
+      .reduce((result, type) => ({ ...result, [type]: 0 }), {} as any)
+  );
+}
 
 async function processDirectory(
   dirPath: string,
@@ -197,17 +93,8 @@ async function processDirectory(
     size: 0,
     type: KondoType.Other,
     children: [],
-    childrenFileSizes: {
-      [KondoType.Audio]: 0,
-      [KondoType.Document]: 0,
-      [KondoType.Image]: 0,
-      [KondoType.Other]: 0,
-      [KondoType.SourceCode]: 0,
-      [KondoType.Video]: 0
-    }
+    childrenFileSizes: generateBlankChildrenSizes()
   };
-
-  if (limitDepth && depth >= 10) return dir;
 
   const childDirs = entries.filter(entry => entry.isDirectory());
   const childFiles = entries.filter(entry => entry.isFile());
@@ -252,13 +139,16 @@ async function processDirectory(
 
   let predominantType: KondoType = 0;
   let largestSize = fileTypesBySize[predominantType];
-  Object.keys(fileTypesBySize).forEach((key: unknown) => {
-    const type = key as KondoType;
-    if (fileTypesBySize[type] > largestSize) {
-      predominantType = type;
-      largestSize = fileTypesBySize[type];
-    }
-  });
+  Object.keys(fileTypesBySize)
+    // eslint-disable-next-line no-restricted-globals
+    .filter((key: any) => !isNaN(key))
+    .map((key: any) => key)
+    .forEach((type: KondoType) => {
+      if (fileTypesBySize[type] > largestSize) {
+        predominantType = type;
+        largestSize = fileTypesBySize[type];
+      }
+    });
 
   dir.type = predominantType;
 

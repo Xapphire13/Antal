@@ -10,11 +10,12 @@ import { KondoDirectory, KondoType } from '../test';
 const readFile = promisify(fs.readFile);
 const readDir = promisify(fs.readdir);
 const MIN_WIDTH = Math.PI / 180;
+const generateNew = true;
 
 function getColor(type: KondoType) {
   switch (type) {
     case KondoType.Audio:
-      return 0xff000;
+      return 0xff0000;
     case KondoType.Document:
       return 0x00ff00;
     case KondoType.Image:
@@ -23,6 +24,10 @@ function getColor(type: KondoType) {
       return 0x0ff000;
     case KondoType.Video:
       return 0x000ff0;
+    case KondoType.ApplicationFile:
+      return 0xf0f000;
+    case KondoType.Archive:
+      return 0x00f0f0;
     case KondoType.Other:
     default:
       return 0x777777;
@@ -66,7 +71,7 @@ async function onRender({
   if (!selectedDir) {
     let cachedPath = path.join(process.env.HOME || '', 'kondo-backup');
 
-    if (!cachedPath) {
+    if (generateNew || !cachedPath) {
       const scanResultsPath = new Promise<string>(res => {
         ipcRenderer.once('scan-complete', (_ev: any, args: any) => res(args));
       });
@@ -138,8 +143,8 @@ function renderDirectory({
       const arc = createArc({
         centerX,
         centerY,
-        innerRadius: shellNumber * 20,
-        size: 20,
+        innerRadius: 10 + shellNumber * 25,
+        size: 25,
         startAngle,
         endAngle,
         color: getColor(childDir.type)
@@ -147,7 +152,7 @@ function renderDirectory({
 
       arc.interactive = true;
       arc.addListener('pointerover', async () => {
-        console.log(childDir.path);
+        console.log(childDir);
         console.log(
           (await readDir(path.join(dirPath, childDir.path), {
             withFileTypes: true
@@ -181,6 +186,7 @@ function renderDirectory({
 
   // Render other files
   Object.keys(KondoType)
+    // eslint-disable-next-line no-restricted-globals
     .filter((key: any) => !isNaN(key))
     .map(Number)
     .forEach((type: KondoType) => {
@@ -190,7 +196,7 @@ function renderDirectory({
       const filesArc = createArc({
         centerX,
         centerY,
-        innerRadius: shellNumber * 20,
+        innerRadius: 10 + shellNumber * 25,
         size: 5,
         startAngle,
         endAngle: filesEndAngle,
@@ -207,7 +213,7 @@ function renderDirectory({
   const smallFilesArc = createArc({
     centerX,
     centerY,
-    innerRadius: shellNumber * 20,
+    innerRadius: 10 + shellNumber * 25,
     size: 5,
     startAngle,
     endAngle: smallFilesEndAngle,

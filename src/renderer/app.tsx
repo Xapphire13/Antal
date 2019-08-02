@@ -2,6 +2,7 @@ import React from 'react';
 import { ipcRenderer } from 'electron'; // eslint-disable-line
 import * as PIXI from 'pixi.js';
 import fs from 'fs';
+import path from 'path';
 import { promisify } from 'util';
 import PixiCanvas, { OnStageReadyParams } from './pixi-canvas';
 import { KondoDirectory, KondoType } from '../test';
@@ -36,8 +37,7 @@ export default function App() {
 }
 
 async function onStageReady({ height, stage, width }: OnStageReadyParams) {
-  let cachedPath =
-    '/private/var/folders/40/ypqwl1k15k9_bt895bsdb6200000gn/T/da58485917bc8a336b947d00aa3ad7e1.';
+  let cachedPath = path.join(process.env.HOME || '', 'kondo-backup');
 
   if (!cachedPath) {
     const scanResultsPath = new Promise<string>(res => {

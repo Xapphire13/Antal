@@ -91,11 +91,14 @@ app.on('activate', async () => {
 
 ipcMain.on('scan-disk', async (event: any) => {
   console.log('scanning!');
+  const start = Date.now();
   const results = await test();
+  const end = Date.now();
   const tmpPath = tempy.file();
   console.log(`writing to temp file: ${tmpPath}`);
   await writeFile(tmpPath, JSON.stringify(results));
   console.log('done');
+  console.log(`Took: ${(end - start) / 1000} seconds`);
   event.reply('scan-complete', tmpPath);
 });
 
@@ -103,10 +106,4 @@ ipcMain.on('scan-disk', async (event: any) => {
   await app.whenReady();
   Menu.setApplicationMenu(menu);
   mainWindow = await createMainWindow();
-
-  // const start = Date.now();
-  // console.log(await test());
-  // const end = Date.now();
-
-  // console.log(`Took: ${(end - start) / 1000} seconds`);
 })();

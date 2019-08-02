@@ -4,10 +4,28 @@ import * as PIXI from 'pixi.js';
 import fs from 'fs';
 import { promisify } from 'util';
 import PixiCanvas, { OnStageReadyParams } from './pixi-canvas';
-import { KondoDirectory } from '../test';
+import { KondoDirectory, KondoType } from '../test';
 
 const readFile = promisify(fs.readFile);
 const MIN_WIDTH = Math.PI / 180;
+
+function getColor(type: KondoType) {
+  switch (type) {
+    case KondoType.Audio:
+      return 0xff000;
+    case KondoType.Document:
+      return 0x00ff00;
+    case KondoType.Image:
+      return 0x0000ff;
+    case KondoType.SourceCode:
+      return 0x0ff000;
+    case KondoType.Video:
+      return 0x000ff0;
+    case KondoType.Other:
+    default:
+      return 0x777777;
+  }
+}
 
 export default function App() {
   return (
@@ -19,7 +37,7 @@ export default function App() {
 
 async function onStageReady({ height, stage, width }: OnStageReadyParams) {
   let cachedPath =
-    '/private/var/folders/40/ypqwl1k15k9_bt895bsdb6200000gn/T/16e7d10901581825e225b20726a96226.';
+    '/private/var/folders/40/ypqwl1k15k9_bt895bsdb6200000gn/T/da58485917bc8a336b947d00aa3ad7e1.';
 
   if (!cachedPath) {
     const scanResultsPath = new Promise<string>(res => {
@@ -85,7 +103,7 @@ function renderDirectory({
         size: 20,
         startAngle,
         endAngle,
-        color: 0xff1111
+        color: getColor(childDir.type)
       });
 
       stage.addChild(arc);
@@ -107,21 +125,26 @@ function renderDirectory({
   }
 
   // Render other files
-  const otherFilesPercentage =
-    directory.childrenFileSizes.other / directory.size;
-  const otherFilesEndAngle = startAngle + angleWidth * otherFilesPercentage;
-  const otherFilesArc = createArc({
-    centerX,
-    centerY,
-    innerRadius: shellNumber * 20,
-    size: 20,
-    startAngle,
-    endAngle: otherFilesEndAngle,
-    color: 0x999999
-  });
+  Object.keys(KondoType)
+    .filter((key: any) => !isNaN(key))
+    .map(Number)
+    .forEach((type: KondoType) => {
+      const filesPercentage =
+        directory.childrenFileSizes[type] / directory.size;
+      const filesEndAngle = startAngle + angleWidth * filesPercentage;
+      const filesArc = createArc({
+        centerX,
+        centerY,
+        innerRadius: shellNumber * 20,
+        size: 20,
+        startAngle,
+        endAngle: filesEndAngle,
+        color: getColor(type)
+      });
 
-  stage.addChild(otherFilesArc);
-  startAngle = otherFilesEndAngle;
+      stage.addChild(filesArc);
+      startAngle = filesEndAngle;
+    });
 
   // Render small files
   const smallFilesPercentage = smallFilesSize / directory.size;

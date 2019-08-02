@@ -15,6 +15,7 @@
     "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx --fix ./src",
     "test": "npm run lint",
     "build": "webpack",
+    "build:watch": "webpack --watch",
     "start": "electron ./dist",
     "debug": "electron --inspect ./dist",
     "pack": "electron-builder --dir --project-dir ./dist",

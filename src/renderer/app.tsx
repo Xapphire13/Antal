@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ipcRenderer } from 'electron'; // eslint-disable-line
 import * as PIXI from 'pixi.js';
 import fs from 'fs';
@@ -8,6 +8,7 @@ import PixiCanvas, { OnStageReadyParams } from './pixi-canvas';
 import { KondoDirectory, KondoType } from '../test';
 
 const readFile = promisify(fs.readFile);
+const readDir = promisify(fs.readdir);
 const MIN_WIDTH = Math.PI / 180;
 
 function getColor(type: KondoType) {
@@ -29,6 +30,18 @@ function getColor(type: KondoType) {
 }
 
 export default function App() {
+  const [selectedDir, setSelectedDir] = useState<KondoDirectory>();
+  const [selectedDirPath, setSelectedDirPath] = useState<string>('/');
+
+  const onStageReady = (params: OnStageReadyParams) =>
+    onRender({
+      ...params,
+      selectedDir,
+      setSelectedDir,
+      selectedDirPath,
+      setSelectedDirPath
+    });
+
   return (
     <div style={{ background: '#21252B', width: '100%', height: '100%' }}>
       <PixiCanvas onStageReady={onStageReady} />
@@ -36,34 +49,56 @@ export default function App() {
   );
 }
 
-async function onStageReady({ height, stage, width }: OnStageReadyParams) {
-  let cachedPath = path.join(process.env.HOME || '', 'kondo-backup');
+async function onRender({
+  height,
+  stage,
+  width,
+  selectedDir,
+  setSelectedDir,
+  selectedDirPath,
+  setSelectedDirPath
+}: OnStageReadyParams & {
+  selectedDir?: KondoDirectory;
+  setSelectedDir: (dir: KondoDirectory) => void;
+  selectedDirPath: string;
+  setSelectedDirPath: (path: string) => void;
+}) {
+  if (!selectedDir) {
+    let cachedPath = path.join(process.env.HOME || '', 'kondo-backup');
 
-  if (!cachedPath) {
-    const scanResultsPath = new Promise<string>(res => {
-      ipcRenderer.once('scan-complete', (_ev: any, args: any) => res(args));
+    if (!cachedPath) {
+      const scanResultsPath = new Promise<string>(res => {
+        ipcRenderer.once('scan-complete', (_ev: any, args: any) => res(args));
+      });
+      ipcRenderer.send('scan-disk');
+
+      cachedPath = await scanResultsPath;
+    }
+
+    const rootDirectory: KondoDirectory = JSON.parse(
+      await readFile(cachedPath, { encoding: 'utf8' })
+    );
+
+    setSelectedDir(rootDirectory);
+  } else {
+    const centerX = width / 2;
+    const centerY = height / 2;
+
+    renderDirectory({
+      centerX,
+      centerY,
+      directory: selectedDir,
+      minAngle: 0,
+      maxAngle: 2 * Math.PI,
+      shellNumber: 1,
+      stage,
+      dirPath: selectedDirPath,
+      onSelect: (dir, dirPath) => {
+        setSelectedDir(dir);
+        setSelectedDirPath(dirPath);
+      }
     });
-    ipcRenderer.send('scan-disk');
-
-    cachedPath = await scanResultsPath;
   }
-
-  const rootDirectory: KondoDirectory = JSON.parse(
-    await readFile(cachedPath, { encoding: 'utf8' })
-  );
-
-  const centerX = width / 2;
-  const centerY = height / 2;
-
-  renderDirectory({
-    centerX,
-    centerY,
-    directory: rootDirectory,
-    minAngle: 0,
-    maxAngle: 2 * Math.PI,
-    shellNumber: 1,
-    stage
-  });
 }
 
 function renderDirectory({
@@ -73,7 +108,9 @@ function renderDirectory({
   minAngle,
   maxAngle,
   shellNumber,
-  stage
+  stage,
+  dirPath,
+  onSelect
 }: {
   directory: KondoDirectory;
   centerX: number;
@@ -82,6 +119,8 @@ function renderDirectory({
   maxAngle: number;
   shellNumber: number;
   stage: PIXI.Container;
+  dirPath: string;
+  onSelect: (dir: KondoDirectory, dirPath: string) => void;
 }) {
   let startAngle = minAngle;
   const angleWidth = maxAngle - minAngle;
@@ -106,6 +145,20 @@ function renderDirectory({
         color: getColor(childDir.type)
       });
 
+      arc.interactive = true;
+      arc.addListener('pointerover', async () => {
+        console.log(childDir.path);
+        console.log(
+          (await readDir(path.join(dirPath, childDir.path), {
+            withFileTypes: true
+          }))
+            .filter(dirEnt => dirEnt.isFile())
+            .map(dirEnt => dirEnt.name)
+        );
+      });
+      arc.addListener('pointertap', () =>
+        onSelect(childDir, path.join(dirPath, childDir.path))
+      );
       stage.addChild(arc);
 
       renderDirectory({
@@ -115,7 +168,9 @@ function renderDirectory({
         minAngle: startAngle,
         maxAngle: endAngle,
         shellNumber: shellNumber + 1,
-        stage
+        stage,
+        dirPath: path.join(dirPath, childDir.path),
+        onSelect
       });
 
       startAngle = endAngle;
@@ -136,7 +191,7 @@ function renderDirectory({
         centerX,
         centerY,
         innerRadius: shellNumber * 20,
-        size: 20,
+        size: 5,
         startAngle,
         endAngle: filesEndAngle,
         color: getColor(type)
@@ -153,7 +208,7 @@ function renderDirectory({
     centerX,
     centerY,
     innerRadius: shellNumber * 20,
-    size: 20,
+    size: 5,
     startAngle,
     endAngle: smallFilesEndAngle,
     color: 0x444444

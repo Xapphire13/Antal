@@ -10,10 +10,10 @@ import { KondoDirectory, KondoType } from '../test';
 const readFile = promisify(fs.readFile);
 const readDir = promisify(fs.readdir);
 const MIN_WIDTH = Math.PI / 180;
-const generateNew = true;
+const generateNew = false;
 
 function getColor(type: KondoType) {
-  switch (type) {
+  switch (+type) {
     case KondoType.Audio:
       return 0xff0000;
     case KondoType.Document:

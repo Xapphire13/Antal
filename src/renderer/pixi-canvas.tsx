@@ -15,8 +15,11 @@ export default function PixiCanvas({ onStageReady }: PixiCanvasProps) {
   const [pixiApp, setPixiApp] = useState<PIXI.Application>();
   const divElement = useRef<HTMLDivElement>();
   useEffect(() => {
+    let [dX, dY] = [0, 0];
+
     if (pixiApp) {
       pixiApp.stage.removeChildren();
+
       onStageReady({
         stage: pixiApp.stage,
         height: pixiApp.view.clientHeight,
@@ -27,11 +30,22 @@ export default function PixiCanvas({ onStageReady }: PixiCanvasProps) {
         transparent: true,
         antialias: true,
         resizeTo: divElement.current,
-        resolution: 2,
+        resolution: window.devicePixelRatio || 1,
         autoDensity: true,
         clearBeforeRender: true
       });
       divElement.current.appendChild(newPixiApp.view);
+
+      console.log('added');
+      newPixiApp.view.addEventListener('wheel', ev => {
+        ev.preventDefault();
+        dX -= ev.deltaX;
+        dY -= ev.deltaY;
+      });
+
+      newPixiApp.ticker.add(() => {
+        newPixiApp.stage.setTransform(dX, dY);
+      });
 
       setPixiApp(newPixiApp);
     }

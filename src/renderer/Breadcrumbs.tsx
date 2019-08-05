@@ -6,7 +6,7 @@ export type BreadcrumbsProps = {
 };
 
 export default function Breadcrumbs({ path }: BreadcrumbsProps) {
-  const parts = path.split('/');
+  const parts = path.split('/').filter(part => !!part);
 
   return (
     <div>

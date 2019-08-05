@@ -17,14 +17,10 @@ export type WithStylesProps = {
   styles: any;
 };
 
-/* eslint-disable @typescript-eslint/indent */
 export const withStyles: (
   params: (params: typeof defaultTheme) => { [key: string]: CSSProperties }
 ) => <TProps>(
-  wrapped: React.ComponentClass<TProps, any> | React.FunctionComponent<TProps>
-) => React.StatelessComponent<
-  Omit<Omit<TProps, 'styles'>, 'css'>
-> = _withStyles;
-/* eslint-enable @typescript-eslint/indent */
+    wrapped: React.ElementType<TProps>
+  ) => React.ElementType<Omit<Omit<TProps, 'styles'>, 'css'>> = _withStyles;
 
 export { css, ThemedStyleSheet };

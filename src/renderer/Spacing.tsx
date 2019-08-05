@@ -1,7 +1,8 @@
 import React from 'react';
+import theme from './themes/defaultTheme';
 
 export type SpacingProps = {
-  children: React.ElementType | string;
+  children: React.ReactElement | string;
 
   inline?: boolean;
   horizontal?: number;
@@ -34,13 +35,15 @@ export default function Spacing({
     bottom = vertical;
   }
 
+  const { unit } = theme;
+
   return (
     <Tag
       style={{
-        marginTop: (top || 0) * 8,
-        marginBottom: (bottom || 0) * 8,
-        marginLeft: (left || 0) * 8,
-        marginRight: (right || 0) * 8
+        marginTop: (top || 0) * unit,
+        marginBottom: (bottom || 0) * unit,
+        marginLeft: (left || 0) * unit,
+        marginRight: (right || 0) * unit
       }}
     >
       {children}

@@ -1,6 +1,8 @@
 import React from 'react';
 import Spacing from './Spacing';
+import Text, { Weight } from './Text';
 import { withStyles, WithStylesProps } from './themes/withStyles';
+import theme from './themes/defaultTheme';
 
 export type BreadcrumbsProps = {
   path: string;
@@ -14,7 +16,9 @@ export function BareBreadcrumbs({ path, css, styles }: BreadcrumbsProps) {
     <div {...css(styles.breadcrumbs)}>
       {parts.map(part => (
         <Spacing key={part} right={1} inline>
-          {part}
+          <Text weight={Weight.Bolder} color={theme.color.white} inline>
+            {part}
+          </Text>
         </Spacing>
       ))}
     </div>

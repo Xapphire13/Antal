@@ -1,4 +1,5 @@
 import React from 'react';
+import Spacing from './Spacing';
 
 export type BreadcrumbsProps = {
   path: string;
@@ -11,7 +12,9 @@ export default function Breadcrumbs({ path }: BreadcrumbsProps) {
   return (
     <div>
       {parts.map(part => (
-        <span key={part}>{part}</span>
+        <Spacing key={part} right={1} inline>
+          {part}
+        </Spacing>
       ))}
     </div>
   );

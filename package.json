@@ -18,8 +18,8 @@
     "build:watch": "webpack --watch",
     "start": "electron ./dist",
     "debug": "electron --inspect ./dist",
-    "pack": "electron-builder --dir --project-dir ./dist",
-    "dist": "electron-builder --macos --linux --windows --project-dir ./dist",
+    "pack": "electron-builder --dir --projectDir ./dist",
+    "dist": "electron-builder --macos --linux --windows --projectDir ./dist",
     "release": "np"
   },
   "dependencies": {

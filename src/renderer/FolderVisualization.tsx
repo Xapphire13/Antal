@@ -1,7 +1,7 @@
 import React from 'react';
 import * as PIXI from 'pixi.js';
 import path from 'path';
-import PixiCanvas, { OnStageReadyParams } from './pixi-canvas';
+import PixiCanvas, { OnStageReadyParams } from './PixiCanvas';
 
 import { KondoDirectory, KondoType } from '../test';
 
@@ -197,7 +197,7 @@ function createArc({
 
 export type FolderVisualizationProps = {
   directory: KondoDirectory;
-  onDirectorySelected: (directory: KondoDirectory) => void;
+  onDirectorySelected: (directory: KondoDirectory, path: string) => void;
   dirPath: string;
 };
 

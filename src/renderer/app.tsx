@@ -5,6 +5,7 @@ import fs from 'fs';
 import { promisify } from 'util';
 import { KondoDirectory } from '../test';
 import FolderVisualization from './FolderVisualization';
+import Breadcrumbs from './Breadcrumbs';
 
 const readFile = promisify(fs.readFile);
 const generateNew = false;
@@ -13,9 +14,9 @@ export default function App() {
   const [selectedDir, setSelectedDir] = useState<KondoDirectory>();
   const [dirPath, setDirPath] = useState<string>('/');
 
-  const onDirectorySelected = (dir: KondoDirectory) => {
-    setSelectedDir(dir);
-    setDirPath(path.join(dirPath, dir.path));
+  const onDirectorySelected = (newDir: KondoDirectory, newDirPath: string) => {
+    setSelectedDir(newDir);
+    setDirPath(newDirPath);
   };
 
   useEffect(() => {
@@ -45,6 +46,7 @@ export default function App() {
 
   return (
     <div style={{ background: '#21252B', width: '100%', height: '100%' }}>
+      {dirPath && <Breadcrumbs path={dirPath} onSelect={() => {}} />}
       {selectedDir && (
         <FolderVisualization
           directory={selectedDir}

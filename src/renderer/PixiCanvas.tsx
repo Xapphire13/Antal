@@ -38,7 +38,6 @@ export default function PixiCanvas({ onStageReady }: PixiCanvasProps) {
       });
       divElement.current.appendChild(newPixiApp.view);
 
-      console.log('added');
       newPixiApp.view.addEventListener('wheel', ev => {
         ev.preventDefault();
 

@@ -6,11 +6,14 @@ import { promisify } from 'util';
 import { KondoDirectory } from '../test';
 import FolderVisualization from './FolderVisualization';
 import Breadcrumbs from './Breadcrumbs';
+import { withStyles, WithStylesProps } from './themes/withStyles';
 
 const readFile = promisify(fs.readFile);
 const generateNew = false;
 
-export default function App() {
+type AppProps = WithStylesProps;
+
+export function BareApp({ css, styles }: AppProps) {
   const [selectedDir, setSelectedDir] = useState<KondoDirectory>();
   const [dirPath, setDirPath] = useState<string>('/');
 
@@ -45,7 +48,7 @@ export default function App() {
   });
 
   return (
-    <div style={{ background: '#21252B', width: '100%', height: '100%' }}>
+    <div {...css(styles.app)}>
       {dirPath && <Breadcrumbs path={dirPath} onSelect={() => {}} />}
       {selectedDir && (
         <FolderVisualization
@@ -57,3 +60,11 @@ export default function App() {
     </div>
   );
 }
+
+export default withStyles(() => ({
+  app: {
+    background: '#21252B',
+    width: '100%',
+    height: '100%'
+  }
+}))(BareApp);

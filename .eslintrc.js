@@ -1,5 +1,5 @@
 module.exports = {
-  plugins: ["prettier"],
+  plugins: ["prettier", "react-with-styles"],
   extends: ["airbnb-typescript", "plugin:prettier/recommended", "prettier/react"],
   env: { browser: true },
   rules: {

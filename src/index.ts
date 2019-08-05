@@ -57,7 +57,7 @@ const createMainWindow = async () => {
     mainWindow = undefined;
   });
 
-  await win.loadFile(path.join(__dirname, '../static/index.html'));
+  await win.loadFile(path.join(__dirname, 'index.html'));
 
   return win;
 };

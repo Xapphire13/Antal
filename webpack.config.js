@@ -1,5 +1,8 @@
 const path = require('path');
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const HtmlWebpackTagsPlugin = require('html-webpack-tags-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 /*
  * SplitChunksPlugin is enabled by default and replaced
@@ -18,6 +21,29 @@ const baseConfig = {
   mode: 'development',
   plugins: [new webpack.ProgressPlugin()],
 
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js', '.jsx']
+  }
+};
+
+const rendererConfig = {
+  ...baseConfig,
+  entry: './src/renderer/index.tsx',
+  plugins: [
+    ...baseConfig.plugins,
+    new CopyPlugin([{ from: path.resolve(__dirname, 'static'), to: 'static' }]),
+    new HtmlWebpackPlugin(),
+    new HtmlWebpackTagsPlugin({
+      tags: 'static/index.css'
+    })
+  ],
+
+  output: {
+    filename: 'renderer-[name].js',
+    path: path.resolve(__dirname, 'dist'),
+    publicPath: './'
+  },
+
   optimization: {
     splitChunks: {
       cacheGroups: {
@@ -27,25 +53,11 @@ const baseConfig = {
         }
       },
 
-      chunks: 'async',
+      chunks: 'all',
       minChunks: 1,
       minSize: 30000,
       name: true
     }
-  },
-
-  resolve: {
-    extensions: ['.tsx', '.ts', '.js', '.jsx']
-  }
-};
-
-const rendererConfig = {
-  ...baseConfig,
-  entry: './src/renderer/index.tsx',
-
-  output: {
-    filename: 'renderer-[name].js',
-    path: path.resolve(__dirname, 'dist')
   },
 
   module: {

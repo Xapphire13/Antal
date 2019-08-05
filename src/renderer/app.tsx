@@ -61,9 +61,9 @@ export function BareApp({ css, styles }: AppProps) {
   );
 }
 
-export default withStyles(() => ({
+export default withStyles(({ color }) => ({
   app: {
-    background: '#21252B',
+    background: color.darkGray,
     width: '100%',
     height: '100%'
   }

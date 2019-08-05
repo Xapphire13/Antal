@@ -43,6 +43,7 @@ export default function PixiCanvas({ onStageReady }: PixiCanvasProps) {
         ev.preventDefault();
 
         if (ev.getModifierState('Meta')) {
+          const previousZoom = zoom;
           zoom += ev.deltaY / 500;
           if (zoom < 0.1) {
             zoom = 0.1;
@@ -50,6 +51,15 @@ export default function PixiCanvas({ onStageReady }: PixiCanvasProps) {
           if (zoom > 4) {
             zoom = 4;
           }
+
+          const ratio = zoom / previousZoom;
+          const localPoint = newPixiApp.stage.localTransform.applyInverse(
+            new PIXI.Point(ev.clientX, ev.clientY)
+          );
+          const mX = localPoint.x; // ev.clientX;
+          const mY = localPoint.y; // ev.clientY;
+          dX -= ratio * (ratio * mX - mX);
+          dY -= ratio * (ratio * mY - mY);
         } else {
           dX -= ev.deltaX;
           dY -= ev.deltaY;

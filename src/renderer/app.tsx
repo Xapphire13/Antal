@@ -8,7 +8,6 @@ import PixiCanvas, { OnStageReadyParams } from './pixi-canvas';
 import { KondoDirectory, KondoType } from '../test';
 
 const readFile = promisify(fs.readFile);
-const readDir = promisify(fs.readdir);
 const MIN_WIDTH = Math.PI / 180;
 const generateNew = false;
 
@@ -151,16 +150,6 @@ function renderDirectory({
       });
 
       arc.interactive = true;
-      arc.addListener('pointerover', async () => {
-        console.log(childDir);
-        console.log(
-          (await readDir(path.join(dirPath, childDir.path), {
-            withFileTypes: true
-          }))
-            .filter(dirEnt => dirEnt.isFile())
-            .map(dirEnt => dirEnt.name)
-        );
-      });
       arc.addListener('pointertap', () =>
         onSelect(childDir, path.join(dirPath, childDir.path))
       );

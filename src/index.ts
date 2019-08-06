@@ -9,6 +9,7 @@ import fs from 'fs';
 import { promisify } from 'util';
 import menu from './menu';
 import test from './test';
+import log from './logger';
 // / const {autoUpdater} = require('electron-updater');
 
 const writeFile = promisify(fs.writeFile);
@@ -90,15 +91,15 @@ app.on('activate', async () => {
 });
 
 ipcMain.on('scan-disk', async (event: any) => {
-  console.log('scanning!');
+  log.trace('scanning!');
   const start = Date.now();
   const results = await test();
   const end = Date.now();
   const tmpPath = tempy.file();
-  console.log(`writing to temp file: ${tmpPath}`);
+  log.trace(`writing to temp file: ${tmpPath}`);
   await writeFile(tmpPath, JSON.stringify(results));
-  console.log('done');
-  console.log(`Took: ${(end - start) / 1000} seconds`);
+  log.trace('done');
+  log.trace(`Took: ${(end - start) / 1000} seconds`);
   event.reply('scan-complete', tmpPath);
 });
 

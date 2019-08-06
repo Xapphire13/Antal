@@ -34,7 +34,8 @@ export default function PixiCanvas({ onStageReady }: PixiCanvasProps) {
         resizeTo: divElement.current,
         resolution: window.devicePixelRatio || 1,
         autoDensity: true,
-        clearBeforeRender: true
+        clearBeforeRender: true,
+        powerPreference: 'low-power'
       });
       divElement.current.appendChild(newPixiApp.view);
 

@@ -21,7 +21,7 @@ export type TextProps = {
   weight?: Weight;
 } & WithStylesProps;
 
-export function Text({
+export function BareText({
   inline,
   children,
   color = 'inherit',
@@ -43,4 +43,4 @@ export default withStyles(() => ({
   bolder: {
     fontWeight: 'bold'
   }
-}))(Text);
+}))(BareText);

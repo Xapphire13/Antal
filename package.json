@@ -7,7 +7,8 @@
   "repository": "xapphire13/kondo",
   "author": {
     "name": "Xapphire13",
-    "url": "http://xapphire13.com"
+    "url": "http://xapphire13.com",
+    "email": "xapphire13@live.com"
   },
   "main": "dist/index.js",
   "scripts": {

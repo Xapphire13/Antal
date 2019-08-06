@@ -65,6 +65,7 @@ export default function PixiCanvas({ onStageReady }: PixiCanvasProps) {
         }
       });
 
+      newPixiApp.ticker.deltaMS = 1000 / 15; // 15 FPS
       newPixiApp.ticker.add(() => {
         newPixiApp.stage.setTransform(dX, dY, zoom, zoom);
       });

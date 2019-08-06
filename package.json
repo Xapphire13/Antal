@@ -9,6 +9,7 @@
     "name": "Xapphire13",
     "url": "http://xapphire13.com"
   },
+  "main": "dist/index.js",
   "scripts": {
     "postinstall": "electron-builder install-app-deps",
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src",
@@ -18,15 +19,14 @@
     "build:watch": "webpack --watch",
     "start": "electron ./dist",
     "debug": "electron --inspect ./dist",
-    "pack": "electron-builder --dir --projectDir ./dist",
-    "dist": "electron-builder --macos --linux --windows --projectDir ./dist",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder --macos --linux --windows",
     "release": "np"
   },
   "dependencies": {
     "aphrodite": "^2.3.1",
     "electron-context-menu": "^0.12.1",
     "electron-debug": "^3.0.0",
-    "electron-rebuild": "^1.8.5",
     "electron-store": "^3.3.0",
     "electron-unhandled": "^2.2.0",
     "electron-updater": "^4.0.6",
@@ -47,6 +47,7 @@
     "copy-webpack-plugin": "^5.0.4",
     "electron": "^6.0.0",
     "electron-builder": "^20.43.0",
+    "electron-rebuild": "^1.8.5",
     "eslint": "^5.16.0",
     "eslint-config-airbnb-typescript": "^4.0.1",
     "eslint-config-prettier": "^6.0.0",
@@ -70,6 +71,9 @@
   },
   "build": {
     "appId": "com.xapphire13.kondo",
+    "directories": {
+      "output": "build"
+    },
     "mac": {
       "category": "public.app-category.utility",
       "darkModeSupport": true

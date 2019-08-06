@@ -2,7 +2,7 @@ import React, { CSSProperties } from 'react';
 import { withStyles, WithStylesProps } from './themes/withStyles';
 
 export type SpacingProps = {
-  children: React.ReactElement | string;
+  children: React.ReactElement | React.ReactElement[] | string;
 
   inline?: boolean;
   horizontal?: number;

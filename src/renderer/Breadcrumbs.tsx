@@ -2,14 +2,18 @@ import React from 'react';
 import Spacing from './Spacing';
 import Text, { Weight } from './Text';
 import { withStyles, WithStylesProps } from './themes/withStyles';
-import theme from './themes/defaultTheme';
 
 export type BreadcrumbsProps = {
   path: string;
   onSelect: (path: string) => void;
 } & WithStylesProps;
 
-export function BareBreadcrumbs({ path, css, styles }: BreadcrumbsProps) {
+export function BareBreadcrumbs({
+  path,
+  css,
+  styles,
+  theme
+}: BreadcrumbsProps) {
   const parts = path.split('/').filter(part => !!part);
 
   return (

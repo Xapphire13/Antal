@@ -7,6 +7,7 @@ import { KondoDirectory } from '../test';
 import FolderVisualization from './FolderVisualization';
 import Breadcrumbs from './Breadcrumbs';
 import { withStyles, WithStylesProps } from './themes/withStyles';
+import SideBar from './SideBar';
 
 const readFile = promisify(fs.readFile);
 const generateNew = false;
@@ -49,7 +50,9 @@ export function BareApp({ css, styles }: AppProps) {
 
   return (
     <div {...css(styles.app)}>
-      {dirPath && <Breadcrumbs path={dirPath} onSelect={() => {}} />}
+      <div {...css(styles.breadcrumbs)}>
+        <Breadcrumbs path={dirPath} onSelect={() => {}} />
+      </div>
       {selectedDir && (
         <FolderVisualization
           directory={selectedDir}
@@ -57,6 +60,9 @@ export function BareApp({ css, styles }: AppProps) {
           dirPath={dirPath}
         />
       )}
+      <div {...css(styles.sideBar)}>
+        <SideBar selectedDirPath={dirPath} />
+      </div>
     </div>
   );
 }
@@ -65,6 +71,19 @@ export default withStyles(({ color }) => ({
   app: {
     background: color.darkGray,
     width: '100%',
-    height: '100%'
+    height: '100%',
+    position: 'relative'
+  },
+  breadcrumbs: {
+    position: 'absolute',
+    width: 'calc(100% - 150px)'
+  },
+  sideBar: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    height: '100%',
+    width: 150,
+    background: color.darkGray
   }
 }))(BareApp);

@@ -51,7 +51,7 @@ export function BareApp({ css, styles }: AppProps) {
   return (
     <div {...css(styles.app)}>
       <div {...css(styles.breadcrumbs)}>
-        <Breadcrumbs path={dirPath} onSelect={() => {}} />
+        <Breadcrumbs path={dirPath} onSelect={setDirPath} />
       </div>
       {selectedDir && (
         <FolderVisualization

@@ -20,7 +20,7 @@ export type WithStylesProps = {
 export const withStyles: (
   params: (params: typeof defaultTheme) => { [key: string]: CSSProperties }
 ) => <TProps>(
-    wrapped: React.ElementType<TProps>
-  ) => React.ElementType<Omit<Omit<TProps, 'styles'>, 'css'>> = _withStyles;
+  wrapped: React.ElementType<TProps>
+) => React.ElementType<Omit<Omit<TProps, 'styles'>, 'css'>> = _withStyles;
 
 export { css, ThemedStyleSheet };

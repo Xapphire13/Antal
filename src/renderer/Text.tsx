@@ -29,18 +29,24 @@ export function BareText({
   styles,
   weight
 }: TextProps) {
-  const Tag = inline ? 'span' : 'div';
-
   return (
-    // eslint-disable-next-line react-with-styles/only-spread-css
-    <Tag {...css(weight === Weight.Bolder && styles.bolder)} style={{ color }}>
+    <div
+      {...css(
+        { color },
+        weight === Weight.Bolder && styles.bolder,
+        inline && styles.inline
+      )}
+    >
       {children}
-    </Tag>
+    </div>
   );
 }
 
 export default withStyles(() => ({
   bolder: {
     fontWeight: 'bold'
+  },
+  inline: {
+    display: 'inline-block'
   }
 }))(BareText);

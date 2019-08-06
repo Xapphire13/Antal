@@ -1,5 +1,5 @@
-import React from 'react';
-import theme from './themes/defaultTheme';
+import React, { CSSProperties } from 'react';
+import { withStyles, WithStylesProps } from './themes/withStyles';
 
 export type SpacingProps = {
   children: React.ReactElement | string;
@@ -11,9 +11,9 @@ export type SpacingProps = {
   right?: number;
   top?: number;
   bottom?: number;
-};
+} & WithStylesProps;
 
-export default function Spacing({
+export function BareSpacing({
   bottom,
   horizontal,
   inline,
@@ -21,32 +21,31 @@ export default function Spacing({
   right,
   top,
   vertical,
-  children
+  children,
+  styles,
+  css,
+  theme
 }: SpacingProps) {
-  const Tag = inline ? 'span' : 'div';
-
-  if (horizontal != null) {
-    left = horizontal;
-    right = horizontal;
-  }
-
-  if (vertical != null) {
-    top = vertical;
-    bottom = vertical;
-  }
-
   const { unit } = theme;
+  const computedLeft = horizontal || left;
+  const computedRight = horizontal || right;
+  const computedTop = vertical || top;
+  const computedBottom = vertical || bottom;
+
+  const computedStyles: CSSProperties = {
+    marginTop: (computedTop || 0) * unit,
+    marginBottom: (computedBottom || 0) * unit,
+    marginLeft: (computedLeft || 0) * unit,
+    marginRight: (computedRight || 0) * unit
+  };
 
   return (
-    <Tag
-      style={{
-        marginTop: (top || 0) * unit,
-        marginBottom: (bottom || 0) * unit,
-        marginLeft: (left || 0) * unit,
-        marginRight: (right || 0) * unit
-      }}
-    >
-      {children}
-    </Tag>
+    <div {...css(computedStyles, inline && styles.inline)}>{children}</div>
   );
 }
+
+export default withStyles(() => ({
+  inline: {
+    display: 'inline-block'
+  }
+}))(BareSpacing);

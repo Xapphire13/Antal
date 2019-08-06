@@ -11,6 +11,7 @@ module.exports = {
     "no-shadow": "warn",
     "no-restricted-syntax": "off",
     "no-continue": "off",
-    "no-param-reassign": "warn"
+    "no-param-reassign": "warn",
+    "@typescript-eslint/indent": "off"
   }
 }

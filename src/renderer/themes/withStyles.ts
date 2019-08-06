@@ -15,12 +15,15 @@ ThemedStyleSheet.registerInterface(aphroditeInterface);
 export type WithStylesProps = {
   css: Function;
   styles: any;
+  theme: typeof defaultTheme;
 };
 
 export const withStyles: (
   params: (params: typeof defaultTheme) => { [key: string]: CSSProperties }
 ) => <TProps>(
   wrapped: React.ElementType<TProps>
-) => React.ElementType<Omit<Omit<TProps, 'styles'>, 'css'>> = _withStyles;
+) => React.ElementType<
+  Omit<Omit<Omit<TProps, 'styles'>, 'css'>, 'theme'>
+> = _withStyles;
 
 export { css, ThemedStyleSheet };

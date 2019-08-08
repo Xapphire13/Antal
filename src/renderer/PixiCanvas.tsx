@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import * as PIXI from 'pixi.js';
+import { throttle } from 'throttle-debounce';
 
 export type OnStageReadyParams = {
   stage: PIXI.Container;
@@ -39,6 +40,10 @@ export default function PixiCanvas({ onStageReady }: PixiCanvasProps) {
       });
       divElement.current.appendChild(newPixiApp.view);
 
+      const render = throttle(1000 / 20, () => {
+        newPixiApp.stage.setTransform(dX, dY, zoom, zoom);
+      });
+
       newPixiApp.view.addEventListener('wheel', ev => {
         ev.preventDefault();
 
@@ -64,11 +69,8 @@ export default function PixiCanvas({ onStageReady }: PixiCanvasProps) {
           dX -= ev.deltaX;
           dY -= ev.deltaY;
         }
-      });
 
-      newPixiApp.ticker.deltaMS = 1000 / 15; // 15 FPS
-      newPixiApp.ticker.add(() => {
-        newPixiApp.stage.setTransform(dX, dY, zoom, zoom);
+        render();
       });
 
       setPixiApp(newPixiApp);

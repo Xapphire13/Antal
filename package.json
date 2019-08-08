@@ -40,11 +40,13 @@
     "react-dom": "^16.8.6",
     "react-with-styles": "^3.2.3",
     "react-with-styles-interface-aphrodite": "^5.0.1",
-    "tempy": "^0.3.0"
+    "tempy": "^0.3.0",
+    "throttle-debounce": "^2.1.0"
   },
   "devDependencies": {
     "@types/react": "^16.8.23",
     "@types/react-dom": "^16.8.5",
+    "@types/throttle-debounce": "^1.1.1",
     "@typescript-eslint/eslint-plugin": "^1.13.0",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "copy-webpack-plugin": "^5.0.4",

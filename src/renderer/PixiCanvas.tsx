@@ -38,6 +38,7 @@ export default function PixiCanvas({ onStageReady }: PixiCanvasProps) {
         clearBeforeRender: true,
         powerPreference: 'low-power'
       });
+
       divElement.current.appendChild(newPixiApp.view);
 
       const render = throttle(1000 / 20, () => {
@@ -61,10 +62,8 @@ export default function PixiCanvas({ onStageReady }: PixiCanvasProps) {
           const localPoint = newPixiApp.stage.localTransform.applyInverse(
             new PIXI.Point(ev.clientX, ev.clientY)
           );
-          const mX = localPoint.x; // ev.clientX;
-          const mY = localPoint.y; // ev.clientY;
-          dX -= ratio * (ratio * mX - mX);
-          dY -= ratio * (ratio * mY - mY);
+          dX -= ratio * localPoint.x - localPoint.x;
+          dY -= ratio * localPoint.y - localPoint.y;
         } else {
           dX -= ev.deltaX;
           dY -= ev.deltaY;

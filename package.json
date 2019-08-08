@@ -35,7 +35,7 @@
     "eslint-plugin-react-with-styles": "^2.1.0",
     "keycode-js": "^1.0.4",
     "log-symbols": "^3.0.0",
-    "pixi.js": "^5.1.0",
+    "pixi.js": "^5.1.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
     "react-with-styles": "^3.2.3",

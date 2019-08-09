@@ -18,12 +18,12 @@ export type WithStylesProps = {
   theme: typeof defaultTheme;
 };
 
+type StyleMap = { [key: string]: StyleMap | CSSProperties };
+
 export const withStyles: (
-  params: (params: typeof defaultTheme) => { [key: string]: CSSProperties }
+  params: (params: typeof defaultTheme) => StyleMap
 ) => <TProps>(
-  wrapped: React.ElementType<TProps>
-) => React.ElementType<
-  Omit<Omit<Omit<TProps, 'styles'>, 'css'>, 'theme'>
-> = _withStyles;
+  wrapped: React.ComponentType<TProps>
+) => React.ComponentType<Omit<TProps, keyof WithStylesProps>> = _withStyles;
 
 export { css, ThemedStyleSheet };

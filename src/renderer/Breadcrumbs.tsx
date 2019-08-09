@@ -4,6 +4,45 @@ import Spacing from './Spacing';
 import Text, { Weight } from './Text';
 import { withStyles, WithStylesProps } from './themes/withStyles';
 
+type BreadcrumbProps = {
+  title: string;
+  onClick(): void;
+  onKeyPress(event: React.KeyboardEvent): void;
+} & WithStylesProps;
+
+function BareBreadcrumb({
+  onClick,
+  onKeyPress,
+  title,
+  theme,
+  css,
+  styles
+}: BreadcrumbProps) {
+  return (
+    <div
+      {...css(styles.breadcrumb)}
+      onClick={onClick}
+      onKeyPress={onKeyPress}
+      role="button"
+      tabIndex={0}
+    >
+      <Spacing right={1} inline>
+        <Text weight={Weight.Bolder} color={theme.color.white} inline>
+          {title}
+        </Text>
+      </Spacing>
+    </div>
+  );
+}
+
+const Breadcrumb = withStyles(() => ({
+  breadcrumb: {
+    ':hover': {
+      cursor: 'pointer'
+    }
+  }
+}))(BareBreadcrumb);
+
 export type BreadcrumbsProps = {
   path: string;
   onSelect: (path: string) => void;
@@ -13,7 +52,6 @@ export function BareBreadcrumbs({
   path,
   css,
   styles,
-  theme,
   onSelect
 }: BreadcrumbsProps) {
   const parts = path.split('/').filter(part => !!part);
@@ -33,18 +71,12 @@ export function BareBreadcrumbs({
         };
 
         return (
-          <div
-            onClick={onClick}
+          <Breadcrumb
+            key={part}
             onKeyPress={onKeyPress}
-            role="button"
-            tabIndex={0}
-          >
-            <Spacing key={part} right={1} inline>
-              <Text weight={Weight.Bolder} color={theme.color.white} inline>
-                {part}
-              </Text>
-            </Spacing>
-          </div>
+            onClick={onClick}
+            title={part}
+          />
         );
       })}
     </div>

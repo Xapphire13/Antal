@@ -93,18 +93,20 @@ const Breadcrumb = withStyles(({ unit }) => ({
 export type BreadcrumbsProps = {
   path: string;
   onSelect: (path: string) => void;
+  inline?: boolean;
 } & WithStylesProps;
 
 export function BareBreadcrumbs({
   path,
   css,
   styles,
-  onSelect
+  onSelect,
+  inline
 }: BreadcrumbsProps) {
   const parts = path.split('/').filter(part => !!part);
 
   return (
-    <div {...css(styles.breadcrumbs)}>
+    <div {...css(styles.breadcrumbs, inline && styles.inline)}>
       <Spacing vertical={-0.5}>
         {parts.map((part, index) => {
           const onClick = () => onSelect(parts.slice(0, index).join('/'));
@@ -137,5 +139,8 @@ export function BareBreadcrumbs({
 export default withStyles(({ color }) => ({
   breadcrumbs: {
     background: color.darkGray
+  },
+  inline: {
+    display: 'inline-block'
   }
 }))(BareBreadcrumbs);

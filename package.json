@@ -38,6 +38,7 @@
     "pixi.js": "^5.1.1",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
+    "react-feather": "^2.0.3",
     "react-with-styles": "^3.2.3",
     "react-with-styles-interface-aphrodite": "^5.0.1",
     "tempy": "^0.3.0",

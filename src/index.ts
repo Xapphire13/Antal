@@ -45,7 +45,8 @@ const createMainWindow = async () => {
     height: 600,
     webPreferences: {
       nodeIntegration: true
-    }
+    },
+    frame: false
   });
 
   win.on('ready-to-show', () => {

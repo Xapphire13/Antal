@@ -8,6 +8,8 @@ import FolderVisualization from './FolderVisualization';
 import Breadcrumbs from './Breadcrumbs';
 import { withStyles, WithStylesProps } from './themes/withStyles';
 import SideBar from './SideBar';
+import WindowControls from './WindowControls';
+import Spacing from './Spacing';
 
 const readFile = promisify(fs.readFile);
 const generateNew = false;
@@ -50,8 +52,13 @@ export function BareApp({ css, styles }: AppProps) {
 
   return (
     <div {...css(styles.app)}>
+      <div {...css(styles.windowControls)}>
+        <WindowControls />
+      </div>
       <div {...css(styles.breadcrumbs)}>
-        <Breadcrumbs path={dirPath} onSelect={setDirPath} />
+        <Spacing vertical={1}>
+          <Breadcrumbs path={dirPath} onSelect={setDirPath} />
+        </Spacing>
       </div>
       {selectedDir && (
         <FolderVisualization
@@ -76,6 +83,7 @@ export default withStyles(({ color }) => ({
   },
   breadcrumbs: {
     position: 'absolute',
+    display: 'inline-block',
     width: 'calc(100% - 150px)'
   },
   sideBar: {
@@ -85,5 +93,10 @@ export default withStyles(({ color }) => ({
     height: '100%',
     width: 150,
     background: color.darkGray
+  },
+  windowControls: {
+    display: 'inline-block',
+    height: 44,
+    paddingTop: 12
   }
 }))(BareApp);

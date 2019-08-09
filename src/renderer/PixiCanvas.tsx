@@ -74,7 +74,7 @@ export default function PixiCanvas({ onStageReady }: PixiCanvasProps) {
 
       setPixiApp(newPixiApp);
     }
-  });
+  }, [pixiApp, onStageReady]);
 
   return (
     <div style={{ width: '100%', height: '100%' }} ref={divElement as any} />

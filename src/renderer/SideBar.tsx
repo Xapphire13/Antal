@@ -26,7 +26,7 @@ export function BareSideBar({
     }
 
     readFilesInDirectory();
-  });
+  }, [selectedDirPath]);
 
   return (
     <div {...css(styles.sideBar)}>

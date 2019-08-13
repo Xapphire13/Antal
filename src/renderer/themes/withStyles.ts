@@ -12,12 +12,6 @@ import defaultTheme from './defaultTheme';
 ThemedStyleSheet.registerTheme(defaultTheme);
 ThemedStyleSheet.registerInterface(aphroditeInterface);
 
-export type WithStylesProps = {
-  css: Function;
-  styles: any;
-  theme: typeof defaultTheme;
-};
-
 type StyleMap = {
   [key: string]:
     | CSSProperties
@@ -26,6 +20,12 @@ type StyleMap = {
           | CSSProperties
           | CSSProperties[keyof CSSProperties];
       };
+};
+
+export type WithStylesProps = {
+  css: Function;
+  styles: any;
+  theme: typeof defaultTheme;
 };
 
 export const withStyles: (

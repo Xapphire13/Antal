@@ -8,8 +8,7 @@ import FolderVisualization from './FolderVisualization';
 import Breadcrumbs from './Breadcrumbs';
 import { withStyles, WithStylesProps } from './themes/withStyles';
 import SideBar from './SideBar';
-import WindowControls from './WindowControls';
-import Spacing from './Spacing';
+import MenuBar from './MenuBar';
 
 const readFile = promisify(fs.readFile);
 const generateNew = false;
@@ -52,23 +51,20 @@ export function BareApp({ css, styles }: AppProps) {
 
   return (
     <div {...css(styles.app)}>
-      <div {...css(styles.windowControls)}>
-        <WindowControls />
-      </div>
-      <div {...css(styles.breadcrumbs)}>
-        <Spacing vertical={1}>
-          <Breadcrumbs path={dirPath} onSelect={setDirPath} />
-        </Spacing>
-      </div>
-      {selectedDir && (
-        <FolderVisualization
-          directory={selectedDir}
-          onDirectorySelected={onDirectorySelected}
-          dirPath={dirPath}
-        />
-      )}
-      <div {...css(styles.sideBar)}>
-        <SideBar selectedDirPath={dirPath} />
+      <MenuBar>
+        <Breadcrumbs path={dirPath} onSelect={setDirPath} />
+      </MenuBar>
+      <div {...css(styles.content)}>
+        {selectedDir && (
+          <FolderVisualization
+            directory={selectedDir}
+            onDirectorySelected={onDirectorySelected}
+            dirPath={dirPath}
+          />
+        )}
+        <div {...css(styles.sideBar)}>
+          <SideBar selectedDirPath={dirPath} />
+        </div>
       </div>
     </div>
   );
@@ -78,13 +74,12 @@ export default withStyles(({ color }) => ({
   app: {
     background: color.darkGray,
     width: '100%',
-    height: '100%',
-    position: 'relative'
+    height: '100%'
   },
-  breadcrumbs: {
-    position: 'absolute',
-    display: 'inline-block',
-    width: 'calc(100% - 150px)'
+  content: {
+    position: 'relative',
+    height: '100%',
+    widows: '100%'
   },
   sideBar: {
     position: 'absolute',
@@ -93,10 +88,5 @@ export default withStyles(({ color }) => ({
     height: '100%',
     width: 150,
     background: color.darkGray
-  },
-  windowControls: {
-    display: 'inline-block',
-    height: 44,
-    paddingTop: 12
   }
 }))(BareApp);

@@ -1,8 +1,36 @@
 import React from 'react';
-import { withStyles } from './themes/withStyles';
+import { withStyles, WithStylesProps } from './themes/withStyles';
+import WindowControls from './WindowControls';
 
-function BareMenuBar() {
-  return <div />;
+export type MenuBarProps = {
+  children?: React.ReactNode | React.ReactNode[];
+} & WithStylesProps;
+
+function BareMenuBar({ children, styles, css }: MenuBarProps) {
+  return (
+    <div {...css(styles.menuBar)}>
+      <div {...css(styles.controls)}>
+        <WindowControls />
+      </div>
+      <div {...css(styles.childrenContainer)}>{children}</div>
+    </div>
+  );
 }
 
-export default withStyles(() => ({}))(BareMenuBar);
+export default withStyles(() => ({
+  menuBar: {
+    position: 'relative',
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 40
+  },
+  controls: {
+    flexShrink: 0
+  },
+  childrenContainer: {
+    height: '100%',
+    display: 'inline-block',
+    overflow: 'hidden'
+  }
+}))(BareMenuBar);

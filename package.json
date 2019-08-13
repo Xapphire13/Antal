@@ -16,6 +16,7 @@
     "lint": "eslint --ext .js,.jsx,.ts,.tsx ./src",
     "lint:fix": "eslint --ext .js,.jsx,.ts,.tsx --fix ./src",
     "test": "npm run lint",
+    "tsc": "tsc --noEmit -p ./tsconfig.main.json && tsc --noEmit -p ./tsconfig.renderer.json",
     "build": "webpack",
     "build:watch": "webpack --watch",
     "start": "electron ./dist",

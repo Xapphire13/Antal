@@ -1,7 +1,7 @@
 import React from 'react';
 import KeyCode from 'keycode-js';
 import Spacing from './Spacing';
-import Text, { Weight } from './Text';
+import Text from './Text';
 import { withStyles, WithStylesProps } from './themes/withStyles';
 
 type BreadcrumbProps = {

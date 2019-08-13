@@ -18,7 +18,15 @@ export type WithStylesProps = {
   theme: typeof defaultTheme;
 };
 
-type StyleMap = { [key: string]: StyleMap | CSSProperties };
+type StyleMap = {
+  [key: string]:
+    | CSSProperties
+    | {
+        [psuedoSelectorOrMediaQuery: string]:
+          | CSSProperties
+          | CSSProperties[keyof CSSProperties];
+      };
+};
 
 export const withStyles: (
   params: (params: typeof defaultTheme) => StyleMap
